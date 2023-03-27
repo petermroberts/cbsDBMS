@@ -1,7 +1,17 @@
 import graphene
 import Donors.schema
 
-class Query(Donors.schema.Query, graphene.ObjectType):
+class Query(
+    Donors.schema.Query, 
+    graphene.ObjectType
+    ):
     pass
 
-schema = graphene.Schema(query=Query)
+class Mutation(
+    Donors.schema.Mutation,
+    graphene.ObjectType
+    ):
+    pass
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)

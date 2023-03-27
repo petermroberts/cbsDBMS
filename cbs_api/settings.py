@@ -44,7 +44,8 @@ INSTALLED_APPS = [
 ]
 
 GRAPHENE = {
-    'SCHEMA': 'cbs_api.schema.schema'
+    'SCHEMA': 'cbs_api.schema.schema',
+    'ATOMIC_TRANSACTIONS': True,
 }
 
 
@@ -89,7 +90,8 @@ DATABASES = {
         'USER': 'cbsadmin',
         'PASSWORD': 'bloodforlife',
         'HOST': 'localhost',
-        'PORT': '5432'
+        'PORT': '5432',
+        'ATOMIC_TRANSACTIONS': True,
     }
 }
 

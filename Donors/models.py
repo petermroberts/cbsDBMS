@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import CheckConstraint, Q, F
 from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 
 # Create your models here.
 class Donor(models.Model):
@@ -31,6 +32,11 @@ class Donor(models.Model):
     def clean(self):
         if self.blood_type not in ['AP', 'AN', 'BP', 'BN', 'ABP', 'ABN', 'OP', 'ON']:
             raise ValidationError({'blood_type': "Invalid Blood Type"})
+
+class DonorForm(ModelForm):
+    class Meta:
+        model = Donor
+        fields = '__all__'
 
 
 class ContactInfo(models.Model):
