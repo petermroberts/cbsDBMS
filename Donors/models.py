@@ -16,7 +16,6 @@ class Donor(models.Model):
         ('ON', "O-"),
     ]
 
-    donor_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     date_of_birth = models.DateField()
@@ -33,20 +32,30 @@ class Donor(models.Model):
         if self.blood_type not in ['AP', 'AN', 'BP', 'BN', 'ABP', 'ABN', 'OP', 'ON']:
             raise ValidationError({'blood_type': "Invalid Blood Type"})
 
-class DonorForm(ModelForm):
-    class Meta:
-        model = Donor
-        fields = '__all__'
+class DonorContactInfo(models.Model):
+    donor = models.ForeignKey(Donor, on_delete=models.CASCADE)
+    contact_info = models.ForeignKey('ContactInfo', on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = (('donor', 'contact_info'))
 
 class ContactInfo(models.Model):
-    donor = models.OneToOneField(
+    donor = models.ManyToManyField(
         Donor,
-        on_delete=models.CASCADE,
-        primary_key=True
+        through=DonorContactInfo,
+        blank=True,
+        related_name='contact_info',
+        # on_delete=models.CASCADE
     )
     phone = models.CharField(max_length=11)
     email = models.EmailField(max_length=255)
+
+class DonorShippingInfo(models.Model):
+    donor = models.ForeignKey(Donor, on_delete=models.CASCADE)
+    shipping_info = models.ForeignKey('ShippingInfo', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('donor', 'shipping_info'),)
 
 class ShippingInfo(models.Model):
     PROVINCE_ALBERTA = 'AB'
@@ -79,10 +88,15 @@ class ShippingInfo(models.Model):
         (PROVINCE_YUKON, 'Yukon'),
     ]
     
-    donor = models.OneToOneField(Donor, on_delete=models.CASCADE, primary_key=True)
+    donors = models.ManyToManyField(
+        Donor, 
+        through=DonorShippingInfo, 
+        blank=True,
+        related_name='shipping_info', 
+        # on_delete=models.CASCADE
+        )
     postal_code = models.CharField(max_length=7)
-    civic_number = models.PositiveSmallIntegerField()
-    street = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     province = models.CharField(max_length=2, choices=PROVINCE_CHOICES)
 
@@ -90,8 +104,5 @@ class ShippingInfo(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(province__in=('AB', 'BC', 'MB', 'NB', 'NL', 'NT', 'NS', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT')), name='province_invalid'
-            ),
-            CheckConstraint(
-            check=Q(civic_number__gt=0), name='civic_number_invalid'
             )
         ]
