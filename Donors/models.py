@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CheckConstraint, Q, F
+from django.db.models import CheckConstraint, Q
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
