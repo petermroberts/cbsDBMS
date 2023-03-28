@@ -2,7 +2,6 @@ import graphene
 from graphene import InputObjectType, Mutation
 from graphene_django import DjangoObjectType
 from .models import *
-from .forms import *
 
 #todo CreateShippingInfo
 #todo UpdateShippingInfo
