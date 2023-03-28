@@ -75,18 +75,21 @@ class CreateDonor(Mutation):
     donor = graphene.Field(DonorType)
 
     def mutate(self, info, donor_data):
+        # Create ContactInfo object type and save it to the db
         contact_info = ContactInfo(
             phone=donor_data.contact_info.phone,
             email=donor_data.contact_info.email
         )
         contact_info.save()
 
+        # Create teh DonorContactInfo relation and save it to the db
         donor_contact_info = DonorContactInfo(
             donor = None,
             contact_info = contact_info
         )
         donor_contact_info.save()
 
+        # Create the ShippingInfo object and save it to db
         shipping_info = ShippingInfo(
             postal_code=donor_data.shipping_info.postal_code,
             address=donor_data.shipping_info.address,
@@ -95,12 +98,14 @@ class CreateDonor(Mutation):
         )
         shipping_info.save()
 
+        # Create the DonorShippingInfo relation and save it to the db
         donor_shipping_info = DonorShippingInfo(
             donor=None,
             shipping_info=shipping_info
         )
         donor_shipping_info.save()
-
+        
+        # Create the Donor object and save it to the db along with the contact and shipping info
         donor = Donor(
             first_name=donor_data.first_name,
             last_name=donor_data.last_name,
@@ -111,9 +116,9 @@ class CreateDonor(Mutation):
         )
         donor.save()
 
+        # Save the create donors id as the id for the two relations
         donor_contact_info.donor = donor
         donor_contact_info.save()
-
         donor_shipping_info.donor = donor
         donor_shipping_info.save()
 
