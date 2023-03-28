@@ -49,6 +49,7 @@ class Query(object):
     def resolve_shipping_by_donor(root, info, id):
         return ShippingInfo.objects.get(donorshippinginfo__pk=id)
     
+#? These three classes hold the arguments for creating the three models in this app
 class CreateContactInfoInput(InputObjectType):
     phone = graphene.String(required=False)
     email = graphene.String(required=False)
@@ -133,13 +134,15 @@ class UpdateDonor(Mutation):
 
     donor = graphene.Field(DonorType)
 
+    # Update donor entity if at least one of the two attributes below are modified
+    #* Note that date_of_birth and blood_type won't be modified
     def mutate(self, info, donor_id, first_name=None, last_name=None):
         donor = Donor.objects.get(pk=donor_id)
         if first_name is not None:
             donor.first_name = first_name
         if last_name is not None:
             donor.last_name = last_name
-        donor.save()
+        donor.save() # save the modifications
         return UpdateDonor(donor=donor)
 
 #* donor DELETE method
@@ -147,7 +150,7 @@ class DeleteDonor(Mutation):
     class Arguments:
         donor_id = graphene.BigInt(required=True)
 
-    delete_success = graphene.Boolean()
+    delete_success = graphene.Boolean() # verify that the entity was deleted
 
     def mutate(self, info, donor_id):
         Donor.objects.filter(pk=donor_id).delete()
@@ -155,11 +158,12 @@ class DeleteDonor(Mutation):
     
 class CreateContactInfo(Mutation):
     class Arguments:
-        donor_id = graphene.BigInt(required=True)
+        donor_id = graphene.ID(required=True) # need the id of the donor we want to add contact info to
         contact_data = CreateContactInfoInput(required=True)
     
     contact_info = graphene.Field(ContactInfoType)
 
+    #* Like CreateDonor but only need to create a ContactInfo entity and ConorContactInfo relation
     def mutate(self, info, donor_id, contact_data):
         donor = Donor.objects.get(pk=donor_id)
         contact_info = ContactInfo(
@@ -169,11 +173,26 @@ class CreateContactInfo(Mutation):
         contact_info.save()
 
         donor_contact_info = DonorContactInfo(
-            donor=donor,
+            donor=donor, #* because we are explicitly given an id we can set it right away
             contact_info=contact_info
         )
         donor_contact_info.save()
 
+class UpdateContactInfo(Mutation):
+    class Arguments:
+        contact_info_id = graphene.ID(required=True)
+        contact_data = CreateContactInfoInput(required=True)
+
+    contact_info = graphene.Field(ContactInfoType)
+
+    def mutate(self, info, contact_info_id, contact_data):
+        contact_info = ContactInfo.objects.get(pk=contact_info_id)
+        if contact_data.phone is not None:
+            contact_info.phone = contact_data.phone
+        if contact_data.email is not None:
+            contact_info.email = contact_data.email
+        contact_info.save()
+        return UpdateContactInfo(contact_info=contact_info)
 
 class Mutation(object):
     create_donor = CreateDonor.Field()
