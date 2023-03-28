@@ -9,6 +9,7 @@ class Donation(models.Model):
     rejected = models.BooleanField(default=False)
     donor = models.ForeignKey(Donor, on_delete=models.PROTECT)
     located = models.OneToOneField(Warehouse, on_delete=models.CASCADE, blank=True, null=True)
+    donation_used = models.BooleanField(default=False)
 
 
 class BloodDonation(models.Model):
@@ -30,22 +31,22 @@ class PlateletDonationDonations(models.Model):
 class PlateletDonation(models.Model):
     donations = models.ManyToManyField(Donation, through='PlateletDonationDonations')
 
-# class Sample(models.Model):
-#     INFECTION_CHOICES = [
-#         ('Syphilis', 'Syphilis'),
-#         ('HEP_B', 'Hepatitis B'),
-#         ('HEP_C', 'Hepatitis C'),
-#         ('HIV_1', 'Human Immunodeficiency Virus 1'),
-#         ('HIV_2', 'Human Immunodeficiency Virus 2'),
-#         ('HTLV_1', 'Human T-Lymphotropic Virus 1'),
-#         ('HTLV_2', 'Human T-Lymphotropic Virus 2'),
-#         ('WNV', 'West Nile Virus'),
-#         ('CMV', 'Cytomegalovirus'),
-#         ('CD', 'Chagas Disease  '),
-#     ]
-#     donation = models.ForeignKey(Donation, on_delete=models.PROTECT)
-#     infection = models.CharField(max_length=127, choices=INFECTION_CHOICES, default=None, blank=True, null=True)
-#     located = models.OneToOneField(Warehouse, on_delete=models.CASCADE)
+class Sample(models.Model):
+    INFECTION_CHOICES = [
+        ('Syphilis', 'Syphilis'),
+        ('HEP_B', 'Hepatitis B'),
+        ('HEP_C', 'Hepatitis C'),
+        ('HIV_1', 'Human Immunodeficiency Virus 1'),
+        ('HIV_2', 'Human Immunodeficiency Virus 2'),
+        ('HTLV_1', 'Human T-Lymphotropic Virus 1'),
+        ('HTLV_2', 'Human T-Lymphotropic Virus 2'),
+        ('WNV', 'West Nile Virus'),
+        ('CMV', 'Cytomegalovirus'),
+        ('CD', 'Chagas Disease  '),
+    ]
+    donation = models.ForeignKey(Donation, on_delete=models.PROTECT)
+    infection = models.CharField(max_length=127, choices=INFECTION_CHOICES, default=None, blank=True, null=True)
+    located = models.OneToOneField(Warehouse, on_delete=models.CASCADE)
 
 # #todo review these two models
 # class Order(models.Model):

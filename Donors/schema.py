@@ -31,7 +31,7 @@ class DonorShippingInfoType(DjangoObjectType):
 class Query(object):
     all_donors = graphene.List(DonorType)
     donors_by_blood_type = graphene.Field(DonorType, blood_type=graphene.String())
-    donors_by_id = graphene.Field(DonorType, id=graphene.ID())
+    donor_by_id = graphene.Field(DonorType, id=graphene.ID())
 
     contact_info_by_donor = graphene.Field(ContactInfoType, id=graphene.ID())
     shipping_by_donor = graphene.Field(ShippingInfoType, id=graphene.ID())
@@ -42,10 +42,10 @@ class Query(object):
     
     #* Get all donors with blood_type x
     def resolve_donors_by_blood_type(root, info, blood_type):
-        return Donor.objects.get(blood_type=blood_type)
+        return Donor.objects.filter(blood_type=blood_type)
     
     #* Get donor with id x
-    def resolve_donors_by_id(root, info, id):
+    def resolve_donor_by_id(root, info, id):
         return Donor.objects.get(pk=id)
     
     #* Get all contact info of a donor with id x
@@ -72,10 +72,10 @@ class CreateDonorInput(InputObjectType):
     last_name = graphene.String(required=True)
     date_of_birth = graphene.Date(required=True)
     blood_type = graphene.String(required=True)
-    contact_info = CreateContactInfoInput(required=True)
-    shipping_info = CreateShippingInfoInput(required=True)
+    contact_info = CreateContactInfoInput(required=False)
+    shipping_info = CreateShippingInfoInput(required=False)
 
-#* donor POST method, This will also create contact and shipping info
+#* donor POST method
 class CreateDonor(Mutation):
     class Arguments:
         donor_data = CreateDonorInput(required=True)
@@ -83,35 +83,6 @@ class CreateDonor(Mutation):
     donor = graphene.Field(DonorType)
 
     def mutate(self, info, donor_data):
-        # Create ContactInfo object type and save it to the db
-        contact_info = ContactInfo(
-            phone=donor_data.contact_info.phone,
-            email=donor_data.contact_info.email
-        )
-        contact_info.save()
-
-        # Create teh DonorContactInfo relation and save it to the db
-        donor_contact_info = DonorContactInfo(
-            donor = None,
-            contact_info = contact_info
-        )
-        donor_contact_info.save()
-
-        # Create the ShippingInfo object and save it to db
-        shipping_info = ShippingInfo(
-            postal_code=donor_data.shipping_info.postal_code,
-            address=donor_data.shipping_info.address,
-            city=donor_data.shipping_info.city,
-            province=donor_data.shipping_info.province
-        )
-        shipping_info.save()
-
-        # Create the DonorShippingInfo relation and save it to the db
-        donor_shipping_info = DonorShippingInfo(
-            donor=None,
-            shipping_info=shipping_info
-        )
-        donor_shipping_info.save()
         
         # Create the Donor object and save it to the db along with the contact and shipping info
         donor = Donor(
@@ -119,16 +90,8 @@ class CreateDonor(Mutation):
             last_name=donor_data.last_name,
             date_of_birth=donor_data.date_of_birth,
             blood_type=donor_data.blood_type,
-            contact_info=contact_info,
-            shipping_info=shipping_info
         )
         donor.save()
-
-        # Save the create donors id as the id for the two relations
-        donor_contact_info.donor = donor
-        donor_contact_info.save()
-        donor_shipping_info.donor = donor
-        donor_shipping_info.save()
 
         return CreateDonor(donor=donor)
 
@@ -287,3 +250,15 @@ class Mutation(object):
     create_shipping_info = CreateShippingInfo.Field()
     update_shipping_info = UpdateShippingInfo.Field()
     delete_shipping_info = DeleteShippingInfo.Field()
+
+    # def resolve_create_donor(self, info, donor_data):
+    #     # Create the Donor object and save it to the db along with the contact and shipping info
+    #     donor = Donor(
+    #         first_name=donor_data.first_name,
+    #         last_name=donor_data.last_name,
+    #         date_of_birth=donor_data.date_of_birth,
+    #         blood_type=donor_data.blood_type,
+    #     )
+    #     donor.save()
+
+    #     return CreateDonor(donor=donor)

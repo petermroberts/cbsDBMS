@@ -46,6 +46,6 @@ class ShippingInfo(models.Model):
     class Meta:
         constraints = [
             CheckConstraint(
-                check=Q(province__in=('AB', 'BC', 'MB', 'NB', 'NL', 'NT', 'NS', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT')), name='province_invalid'
+                check=Q(province__in=('AB', 'BC', 'MB', 'NB', 'NL', 'NT', 'NS', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT')), name='warehouse_province_invalid'
             )
         ]
