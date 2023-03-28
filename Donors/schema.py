@@ -128,7 +128,7 @@ class CreateDonor(Mutation):
 #* donor UPDATE method
 class UpdateDonor(Mutation):
     class Arguments:
-        donor_id = graphene.BigInt(required=True)
+        donor_id = graphene.ID(required=True)
         first_name = graphene.String(required=False)
         last_name = graphene.String(required=False)
 
@@ -148,7 +148,7 @@ class UpdateDonor(Mutation):
 #* donor DELETE method
 class DeleteDonor(Mutation):
     class Arguments:
-        donor_id = graphene.BigInt(required=True)
+        donor_id = graphene.ID(required=True)
 
     delete_success = graphene.Boolean() # verify that the entity was deleted
 
@@ -193,6 +193,18 @@ class UpdateContactInfo(Mutation):
             contact_info.email = contact_data.email
         contact_info.save()
         return UpdateContactInfo(contact_info=contact_info)
+
+class DeleteContactInfo(Mutation):
+    class Arguments:
+        contact_info_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    # Since the DonorContactInfo relation has a Foreign Key to ContactInfo where on_delete=models.CASCADE
+    # we don't need to explicitly delete the relation
+    def mutate(self, info, contact_info_id):
+        ContactInfo.objects.filter(pk=contact_info_id).delete()
+        return DeleteContactInfo(delete_success=True)
 
 class Mutation(object):
     create_donor = CreateDonor.Field()
