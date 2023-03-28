@@ -37,18 +37,23 @@ class Query(object):
     contact_info_by_donor = graphene.Field(ContactInfoType, id=graphene.ID())
     shipping_by_donor = graphene.Field(ShippingInfoType, id=graphene.ID())
 
+    #* Get all donors
     def resolve_all_donors(root, info, **kwargs):
         return Donor.objects.all()
     
+    #* Get all donors with blood_type x
     def resolve_donors_by_blood_type(root, info, blood_type):
         return Donor.objects.get(blood_type=blood_type)
     
+    #* Get donor with id x
     def resolve_donors_by_id(root, info, id):
         return Donor.objects.get(pk=id)
     
+    #* Get all contact info of a donor with id x
     def resolve_contact_info_by_donor(root, info, id):
         return ContactInfo.objects.get(donorcontactinfo__pk=id)
     
+    #* Get all shipping info of a donor with id x
     def resolve_shipping_by_donor(root, info, id):
         return ShippingInfo.objects.get(donorshippinginfo__pk=id)
     
