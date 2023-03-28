@@ -36,20 +36,28 @@ class SampleType(DjangoObjectType):
 #todo make queries for plasma and platelet donations
 class Query(object):
     all_donations = graphene.List(DonationType)
-    donation_by_id = graphene.Field(DonationType, id=graphene.ID())
-    donations_by_blood_type = graphene.List(DonationType, blood_type=graphene.String())
+    donation_by_id = graphene.Field(DonationType, id=graphene.ID(required=True))
+    donations_by_blood_type = graphene.List(DonationType, blood_type=graphene.String(required=True))
     donations_by_donor = graphene.List(DonationType, donor_id=graphene.ID(required=True))
     donations_by_location = graphene.List(DonationType, warehouse_id=graphene.ID(required=True))
-    donations_by_acceptance = graphene.List(DonationType, rejected=graphene.Boolean())
+    donations_by_acceptance = graphene.List(DonationType, rejected=graphene.Boolean(required=True))
 
     all_blood_donations = graphene.List(BloodDonationType)
     blood_donations_by_blood_type = graphene.List(BloodDonationType, blood_type=graphene.String(required=True))
-    blood_donations_by_location = graphene.List(BloodDonationType, warehouse_id=graphene.ID())
+    blood_donations_by_location = graphene.List(BloodDonationType, warehouse_id=graphene.ID(required=True))
+
+    all_plasma_donations = graphene.List(PlasmaDonationType)
+    plasma_donations_by_blood_type = graphene.List(PlasmaDonationType, blood_type=graphene.String(required=True))
+    plasma_donation_by_location = graphene.List(PlasmaDonationType, warehouse_id=graphene.ID(required=True))
+
+    all_platelet_donations = graphene.List(PlateletDonationType)
+    platelet_donations_by_blood_type = graphene.List(PlateletDonationType, blood_type=graphene.String(required=True))
+    platelet_donation_by_location = graphene.List(PlateletDonationType, warehouse_id=graphene.ID(required=True))
 
     all_samples = graphene.List(SampleType)
-    samples_by_id = graphene.Field(SampleType, id=graphene.ID())
+    samples_by_id = graphene.Field(SampleType, id=graphene.ID(required=True))
     samples_by_infection = graphene.List(SampleType, infection=graphene.String(required=True))
-    samples_by_donor = graphene.List(SampleType, donor_id=graphene.ID())
+    samples_by_donor = graphene.List(SampleType, donor_id=graphene.ID(required=True))
 
     def resolve_all_donations(self, info, **kwargs):
         return Donation.objects.all()
@@ -77,6 +85,24 @@ class Query(object):
     
     def resolve_blood_donations_by_location(self, info, warehouse_id):
         return BloodDonation.objects.filter(location__pk=warehouse_id)
+    
+    def resolve_all_plasma_donations(self, info, **kwargs):
+        return PlasmaDonation.objects.all()
+    
+    def resolve_plasma_donations_by_blood_type(self, info, blood_type):
+        return PlasmaDonation.objects.filter(donation__donor__blood_type=blood_type)
+
+    def resolve_plasma_donations_by_location(self, info, warehouse_id):
+        return PlasmaDonation.objects.filter(location__pk=warehouse_id)
+
+    def resolve_all_platelet_donations(self, info, **kwargs):
+        return PlateletDonation.objects.all()
+    
+    def resolve_platelet_donations_by_blood_type(self, info, blood_type):
+        return PlateletDonation.objects.filter(donation__donor__blood_type=blood_type)
+
+    def resolve_platelet_donations_by_location(self, info, warehouse_id):
+        return PlateletDonation.objects.filter(location__pk=warehouse_id)
 
     def resolve_all_samples(self, info, **kwargs):
         return Sample.objects.all()
@@ -109,6 +135,7 @@ class CreateDonation(Mutation):
         donation.save()
 
         return CreateDonation(donation=donation)
-    
+
+#todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
     create_donation = CreateDonation.Field()
