@@ -4,6 +4,9 @@ from graphene_django import DjangoObjectType
 from .models import *
 from .forms import *
 
+#todo CreateShippingInfo
+#todo UpdateShippingInfo
+#todo DeleteShippingInfo
 
 class DonorType(DjangoObjectType):
     class Meta:
@@ -155,7 +158,8 @@ class DeleteDonor(Mutation):
     def mutate(self, info, donor_id):
         Donor.objects.filter(pk=donor_id).delete()
         return DeleteDonor(delete_success=True)
-    
+
+#* contact info CREATE method
 class CreateContactInfo(Mutation):
     class Arguments:
         donor_id = graphene.ID(required=True) # need the id of the donor we want to add contact info to
@@ -178,6 +182,9 @@ class CreateContactInfo(Mutation):
         )
         donor_contact_info.save()
 
+        return CreateContactInfo(contact_info=contact_info)
+
+#* contact info UPDATE method
 class UpdateContactInfo(Mutation):
     class Arguments:
         contact_info_id = graphene.ID(required=True)
@@ -194,6 +201,7 @@ class UpdateContactInfo(Mutation):
         contact_info.save()
         return UpdateContactInfo(contact_info=contact_info)
 
+#* contact info DELETE method
 class DeleteContactInfo(Mutation):
     class Arguments:
         contact_info_id = graphene.ID(required=True)
@@ -206,7 +214,72 @@ class DeleteContactInfo(Mutation):
         ContactInfo.objects.filter(pk=contact_info_id).delete()
         return DeleteContactInfo(delete_success=True)
 
+#* shipping info CREATE method
+class CreateShippingInfo(Mutation):
+    class Arguments:
+        donor_id = graphene.ID(required=True) # need the id of the donor we want to add contact info to
+        shipping_data = CreateShippingInfoInput(required=True)
+    
+    shipping_info = graphene.Field(ShippingInfoType)
+
+    #* Like CreateDonor but only need to create a ContactInfo entity and ConorContactInfo relation
+    def mutate(self, info, donor_id, contact_data):
+        shipping_info = ShippingInfo(
+            postal_code=shipping_info.postal_code,
+            address=shipping_info.address,
+            city=shipping_info.city,
+            province=shipping_info.province
+        )
+        shipping_info.save()
+
+        # Create the DonorShippingInfo relation and save it to the db
+        donor_shipping_info = DonorShippingInfo(
+            donor=donor_id,
+            shipping_info=shipping_info
+        )
+        donor_shipping_info.save()
+
+        return CreateShippingInfo(shipping_info=shipping_info)
+
+#* shipping info UPDATE method
+class UpdateShippingInfo(Mutation):
+    class Arguments:
+        shipping_info_id = graphene.ID(required=True)
+        shipping_data = CreateShippingInfoInput(required=True)
+
+    shipping_info = graphene.Field(ShippingInfoType)
+
+    def mutate(self, info, shipping_info_id, shipping_data):
+        shipping_info = ShippingInfo.objects.get(pk=shipping_info_id)
+        if shipping_data.phone is not None:
+            shipping_info.phone = shipping_data.phone
+        if shipping_data.email is not None:
+            shipping_info.email = shipping_data.email
+        shipping_info.save()
+        return UpdateShippingInfo(shipping_info=shipping_info)
+
+#* shipping info DELETE method
+class DeleteShippingInfo(Mutation):
+    class Arguments:
+        shipping_info_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    # Since the DonorShippingInfo relation has a Foreign Key to ShippingInfo where on_delete=models.CASCADE
+    # we don't need to explicitly delete the relation
+    def mutate(self, info, shipping_info_id):
+        ShippingInfo.objects.filter(pk=shipping_info_id).delete()
+        return DeleteShippingInfo(delete_success=True)
+
 class Mutation(object):
     create_donor = CreateDonor.Field()
     update_donor = UpdateDonor.Field()
     delete_donor = DeleteDonor.Field()
+
+    create_contact_info = CreateContactInfo.Field()
+    update_contact_info = UpdateContactInfo.Field()
+    delete_contact_info = DeleteContactInfo.Field()
+
+    create_shipping_info = CreateShippingInfo.Field()
+    update_shipping_info = UpdateShippingInfo.Field()
+    delete_shipping_info = DeleteShippingInfo.Field()
