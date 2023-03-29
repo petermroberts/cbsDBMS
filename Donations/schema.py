@@ -335,6 +335,8 @@ class DeleteSample(Mutation):
         Sample.objects.get(pk=sample_id)
         return DeleteSample(delete_success=True)
 
+class DeleteExpiredProduct(Mutation):
+    pass
 
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
@@ -353,3 +355,58 @@ class Mutation(object):
     delete_plasma_donation = DeletePlasmaDonation.Field()
     delete_platelet_donation = DeletePlateletDonation.Field()
     delete_sample = DeleteSample.Field()
+
+    delete_expired_blood = graphene.Boolean()
+    delete_expired_plasma = graphene.Boolean()
+    delete_expired_platelets = graphene.Boolean()
+
+def destroy_expired_donations():
+    donation_expired()
+    delete_expired_blood()
+    delete_expired_plasma()
+    delete_expired_platelets()
+
+def donation_expired(self, info):
+    donations = Donation.objects.all()
+    expired_donation = [donation for donation in donations if is_donation_expired(donation)]
+    for donation in expired_donation:
+        donation.donation_used = True
+        donation.save()
+    return True
+
+def delete_expired_blood(self, info):
+    donations = BloodDonation.objects.all()
+    expired_blood = [donation for donation in donations if is_blood_expired(donation)]
+    for donation in expired_blood:
+        donation.delete()
+    return True
+
+def delete_expired_plasma(self, info):
+    donations = PlasmaDonation.objects.all()
+    expired_plasma = [donation for donation in donations if is_plasma_expired(donation)]
+    for donation in expired_plasma:
+        donation.delete()
+    return True
+
+def delete_expired_platelets(self, info):
+    donations = PlateletDonation.objects.all()
+    expired_platelets = [donation for donation in donations if is_platelets_expired(donation)]
+    for donation in expired_platelets:
+        donation.delete()
+    return True
+
+def is_donation_expired(donation):
+    days_since_donation = (date.today() - donation.date_collected).days
+    return days_since_donation >= 35
+
+def is_blood_expired(donation):
+    days_since_donation = (date.today() - donation.date_collected).days
+    return days_since_donation >= 42
+
+def is_plasma_expired(donation):
+    days_since_donation = (date.today() - donation.date_collected).days
+    return days_since_donation >= 365
+
+def is_platelets_expired(donation):
+    days_since_donation = (date.today() - donation.date_collected).days
+    return days_since_donation >= 5
