@@ -9,6 +9,7 @@ graphene-django = "*"
 graphene = "*"
 psycopg-binary = "*"
 psycopg2-binary = "*"
+celery = "*"
 
 [dev-packages]
 
