@@ -192,6 +192,16 @@ class UpdateBloodDonation(Mutation):
 
         return UpdateBloodDonation(blood_donation=blood_donation)
 
+class DeleteBloodDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    def mutate(self, info, donation_id):
+        BloodDonation.objects.filter(pk=donation_id).delete()
+        return DeleteBloodDonation(delete_success=True)
+
 class CreatePlasmaDonation(Mutation):
     class Arguments:
         blood_type = graphene.String(required=True)
@@ -236,6 +246,16 @@ class UpdatePlasmaDonation(Mutation):
 
         return UpdatePlasmaDonation(plasma_donation=plasma_donation)
 
+class DeletePlasmaDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    def mutate(self, info, donation_id):
+        PlasmaDonation.objects.filter(pk=donation_id).delete()
+        return DeletePlasmaDonation(delete_success=True)
+
 class CreatePlateletDonation(Mutation):
     class Arguments:
         blood_type = graphene.String(required=True)
@@ -279,6 +299,16 @@ class UpdatePlateletDonation(Mutation):
         platelet_donation.save()
 
         return UpdatePlateletDonation(platelet_donation=platelet_donation)
+
+class DeletePlateletDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    def mutate(self, info, donation_id):
+        PlateletDonation.objects.filter(pk=donation_id).delete()
+        return DeletePlateletDonation(delete_success=True)
 
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
