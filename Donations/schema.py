@@ -300,6 +300,21 @@ class UpdatePlateletDonation(Mutation):
 
         return UpdatePlateletDonation(platelet_donation=platelet_donation)
 
+class UpdateSample(Mutation):
+    class Arguments:
+        sample_id = graphene.ID(required=True)
+        infection = graphene.String(required=False)
+
+    sample = graphene.Field(SampleType)
+
+    def mutate(self, info, sample_id, infection=None):
+        sample = Sample.objects.get(pk=sample_id)
+        if infection is not None:
+            sample.infection = infection
+        sample.save()
+
+        return UpdateSample(sample=sample)
+
 class DeletePlateletDonation(Mutation):
     class Arguments:
         donation_id = graphene.ID(required=True)
@@ -309,6 +324,17 @@ class DeletePlateletDonation(Mutation):
     def mutate(self, info, donation_id):
         PlateletDonation.objects.filter(pk=donation_id).delete()
         return DeletePlateletDonation(delete_success=True)
+
+class DeleteSample(Mutation):
+    class Arguments:
+        sample_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    def mutate(self, info, sample_id):
+        Sample.objects.get(pk=sample_id)
+        return DeleteSample(delete_success=True)
+
 
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
