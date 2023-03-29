@@ -339,3 +339,17 @@ class DeleteSample(Mutation):
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
     create_donation = CreateDonation.Field()
+    create_blood_donation = CreateBloodDonation.Field()
+    create_plasma_donation = CreatePlasmaDonation.Field()
+    create_platelet_donation = CreatePlateletDonation.Field()
+
+    update_donation = UpdateDonation.Field()
+    update_blood_donation = UpdateBloodDonation.Field()
+    update_plasma_donation = UpdatePlasmaDonation.Field()
+    update_platelet_donation = UpdatePlateletDonation.Field()
+    update_sample = UpdateSample.Field()
+
+    delete_blood_donation = DeleteBloodDonation.Field()
+    delete_plasma_donation = DeletePlasmaDonation.Field()
+    delete_platelet_donation = DeletePlateletDonation.Field()
+    delete_sample = DeleteSample.Field()
