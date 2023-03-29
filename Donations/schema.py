@@ -169,6 +169,64 @@ class CreateBloodDonation(Mutation):
         donation.donation_used = True
         donation.save()
         return CreateBloodDonation(blood_donation=blood_donation)
+    
+class CreatePlasmaDonation(Mutation):
+    class Arguments:
+        blood_type = graphene.String(required=True)
+        located = graphene.ID(required=True)
+
+    plasma_donation = graphene.Field(PlasmaDonationType)
+
+    def mutate(self, info, blood_type, located):
+        donations = Donation.objects.filter(
+            blood_type=blood_type, 
+            donation_used=False,
+            located=located
+        ).order_by('date_collected')[:3]
+
+        if len(donations) != 3:
+            raise ValidationError(f"There are not donations of blood type {blood_type} to create this product")
+        
+        plasma_donation = PlasmaDonation.objects.create(located=located)
+
+        for donation in donations:
+            PlasmaDonationDonations.objects.create(
+                plasma_donation=plasma_donation,
+                donation=donation
+            )
+            donation.donation_used=True
+            donation.save()
+
+        return CreatePlasmaDonation(plasma_donation=plasma_donation)
+
+class CreatePlateletDonation(Mutation):
+    class Arguments:
+        blood_type = graphene.String(required=True)
+        located = graphene.ID(required=True)
+
+    platelet_donation = graphene.Field(PlateletDonationType)
+
+    def mutate(self, info, blood_type, located):
+        donations = Donation.objects.filter(
+            blood_type=blood_type, 
+            donation_used=False,
+            located=located
+        ).order_by('date_collected')[:3]
+
+        if len(donations) != 3:
+            raise ValidationError(f"There are not donations of blood type {blood_type} to create this product")
+        
+        platelet_donation = PlateletDonation.objects.create(located=located)
+
+        for donation in donations:
+            PlateletDonationDonations.objects.create(
+                platelet_donation=platelet_donation,
+                donation=donation
+            )
+            donation.donation_used=True
+            donation.save()
+
+        return CreatePlateletDonation(platelet_donation=platelet_donation)
 
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
