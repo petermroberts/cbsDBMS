@@ -153,6 +153,23 @@ class UpdateDonation(Mutation):
         donation.save()
         return UpdateDonation(donation=donation)
 
+class CreateBloodDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+
+    blood_donation = graphene.Field(BloodDonationType)
+
+    def mutate(self, info, donation_id):
+        donation = Donation.objects.get(pk=donation_id)
+        blood_donation = BloodDonation(
+            donation=donation,
+            located=donation.located
+        )
+        blood_donation.save()
+        donation.donation_used = True
+        donation.save()
+        return CreateBloodDonation(blood_donation=blood_donation)
+
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
     create_donation = CreateDonation.Field()
