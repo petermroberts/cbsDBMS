@@ -135,6 +135,23 @@ class CreateDonation(Mutation):
         donation.save()
 
         return CreateDonation(donation=donation)
+    
+class UpdateDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+        rejected = graphene.Boolean(required=False)
+        donation_used = graphene.Boolean(required=False)
+
+    donation = graphene.Field(DonationType)
+
+    def mutate(self, info, donation_id, rejected=None, donation_used=None):
+        donation = Donation.objects.get(pk=donation_id)
+        if rejected is not None:
+            donation.rejected = rejected
+        if donation_used is not None:
+            donation.donation_used = donation_used
+        donation.save()
+        return UpdateDonation(donation=donation)
 
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
