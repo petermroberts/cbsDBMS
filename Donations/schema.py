@@ -142,23 +142,6 @@ class CreateDonation(Mutation):
         sample.save()
 
         return CreateDonation(donation=donation)
-    
-class UpdateDonation(Mutation):
-    class Arguments:
-        donation_id = graphene.ID(required=True)
-        rejected = graphene.Boolean(required=False)
-        donation_used = graphene.Boolean(required=False)
-
-    donation = graphene.Field(DonationType)
-
-    def mutate(self, info, donation_id, rejected=None, donation_used=None):
-        donation = Donation.objects.get(pk=donation_id)
-        if rejected is not None:
-            donation.rejected = rejected
-        if donation_used is not None:
-            donation.donation_used = donation_used
-        donation.save()
-        return UpdateDonation(donation=donation)
 
 class CreateBloodDonation(Mutation):
     class Arguments:
@@ -176,31 +159,6 @@ class CreateBloodDonation(Mutation):
         donation.donation_used = True
         donation.save()
         return CreateBloodDonation(blood_donation=blood_donation)
-
-class UpdateBloodDonation(Mutation):
-    class Arguments:
-        donation_id = graphene.ID(required=True)
-        located = graphene.ID(required=True)
-
-    blood_donation = graphene.Field(BloodDonationType)
-
-    def mutate(self, info, donation_id, located=None):
-        blood_donation = BloodDonation.objects.get(pk=donation_id)
-        if located is not None:
-            blood_donation.located = located
-        blood_donation.save()
-
-        return UpdateBloodDonation(blood_donation=blood_donation)
-
-class DeleteBloodDonation(Mutation):
-    class Arguments:
-        donation_id = graphene.ID(required=True)
-
-    delete_success = graphene.Boolean()
-
-    def mutate(self, info, donation_id):
-        BloodDonation.objects.filter(pk=donation_id).delete()
-        return DeleteBloodDonation(delete_success=True)
 
 class CreatePlasmaDonation(Mutation):
     class Arguments:
@@ -231,31 +189,6 @@ class CreatePlasmaDonation(Mutation):
 
         return CreatePlasmaDonation(plasma_donation=plasma_donation)
 
-class UpdatePlasmaDonation(Mutation):
-    class Arguments:
-        donation_id = graphene.ID(required=True)
-        located = graphene.ID(required=True)
-
-    plasma_donation = graphene.Field(PlasmaDonationType)
-
-    def mutate(self, info, donation_id, located=None):
-        plasma_donation = PlasmaDonation.objects.get(pk=donation_id)
-        if located is not None:
-            plasma_donation.located = located
-        plasma_donation.save()
-
-        return UpdatePlasmaDonation(plasma_donation=plasma_donation)
-
-class DeletePlasmaDonation(Mutation):
-    class Arguments:
-        donation_id = graphene.ID(required=True)
-
-    delete_success = graphene.Boolean()
-
-    def mutate(self, info, donation_id):
-        PlasmaDonation.objects.filter(pk=donation_id).delete()
-        return DeletePlasmaDonation(delete_success=True)
-
 class CreatePlateletDonation(Mutation):
     class Arguments:
         blood_type = graphene.String(required=True)
@@ -284,6 +217,53 @@ class CreatePlateletDonation(Mutation):
             donation.save()
 
         return CreatePlateletDonation(platelet_donation=platelet_donation)
+
+class UpdateDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+        rejected = graphene.Boolean(required=False)
+        donation_used = graphene.Boolean(required=False)
+
+    donation = graphene.Field(DonationType)
+
+    def mutate(self, info, donation_id, rejected=None, donation_used=None):
+        donation = Donation.objects.get(pk=donation_id)
+        if rejected is not None:
+            donation.rejected = rejected
+        if donation_used is not None:
+            donation.donation_used = donation_used
+        donation.save()
+        return UpdateDonation(donation=donation)
+
+class UpdateBloodDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+        located = graphene.ID(required=True)
+
+    blood_donation = graphene.Field(BloodDonationType)
+
+    def mutate(self, info, donation_id, located=None):
+        blood_donation = BloodDonation.objects.get(pk=donation_id)
+        if located is not None:
+            blood_donation.located = located
+        blood_donation.save()
+
+        return UpdateBloodDonation(blood_donation=blood_donation)
+
+class UpdatePlasmaDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+        located = graphene.ID(required=True)
+
+    plasma_donation = graphene.Field(PlasmaDonationType)
+
+    def mutate(self, info, donation_id, located=None):
+        plasma_donation = PlasmaDonation.objects.get(pk=donation_id)
+        if located is not None:
+            plasma_donation.located = located
+        plasma_donation.save()
+
+        return UpdatePlasmaDonation(plasma_donation=plasma_donation)
 
 class UpdatePlateletDonation(Mutation):
     class Arguments:
@@ -314,6 +294,26 @@ class UpdateSample(Mutation):
         sample.save()
 
         return UpdateSample(sample=sample)
+
+class DeleteBloodDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    def mutate(self, info, donation_id):
+        BloodDonation.objects.filter(pk=donation_id).delete()
+        return DeleteBloodDonation(delete_success=True)
+
+class DeletePlasmaDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    def mutate(self, info, donation_id):
+        PlasmaDonation.objects.filter(pk=donation_id).delete()
+        return DeletePlasmaDonation(delete_success=True)
 
 class DeletePlateletDonation(Mutation):
     class Arguments:
