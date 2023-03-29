@@ -176,7 +176,22 @@ class CreateBloodDonation(Mutation):
         donation.donation_used = True
         donation.save()
         return CreateBloodDonation(blood_donation=blood_donation)
-    
+
+class UpdateBloodDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+        located = graphene.ID(required=True)
+
+    blood_donation = graphene.Field(BloodDonationType)
+
+    def mutate(self, info, donation_id, located=None):
+        blood_donation = BloodDonation.objects.get(pk=donation_id)
+        if located is not None:
+            blood_donation.located = located
+        blood_donation.save()
+
+        return UpdateBloodDonation(blood_donation=blood_donation)
+
 class CreatePlasmaDonation(Mutation):
     class Arguments:
         blood_type = graphene.String(required=True)
@@ -205,6 +220,21 @@ class CreatePlasmaDonation(Mutation):
             donation.save()
 
         return CreatePlasmaDonation(plasma_donation=plasma_donation)
+
+class UpdatePlasmaDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+        located = graphene.ID(required=True)
+
+    plasma_donation = graphene.Field(PlasmaDonationType)
+
+    def mutate(self, info, donation_id, located=None):
+        plasma_donation = PlasmaDonation.objects.get(pk=donation_id)
+        if located is not None:
+            plasma_donation.located = located
+        plasma_donation.save()
+
+        return UpdatePlasmaDonation(plasma_donation=plasma_donation)
 
 class CreatePlateletDonation(Mutation):
     class Arguments:
@@ -235,7 +265,20 @@ class CreatePlateletDonation(Mutation):
 
         return CreatePlateletDonation(platelet_donation=platelet_donation)
 
+class UpdatePlateletDonation(Mutation):
+    class Arguments:
+        donation_id = graphene.ID(required=True)
+        located = graphene.ID(required=True)
 
+    platelet_donation = graphene.Field(PlateletDonationType)
+
+    def mutate(self, info, donation_id, located=None):
+        platelet_donation = PlateletDonation.objects.get(pk=donation_id)
+        if located is not None:
+            platelet_donation.located = located
+        platelet_donation.save()
+
+        return UpdatePlateletDonation(platelet_donation=platelet_donation)
 
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
