@@ -31,6 +31,12 @@ class CreateWarehouseShippingInfoInput(InputObjectType):
     city = graphene.String(required=True)
     province = graphene.String(required=True)
 
+class UpdateWarehouseShippingInfoInput(InputObjectType):
+    postal_code = graphene.String(required=False)
+    address = graphene.String(required=False)
+    city = graphene.String(required=False)
+    province = graphene.String(required=False)
+
 class CreateWarehouse(Mutation):
     class Arguments:
         shipping_data = CreateWarehouseShippingInfoInput(required=True)
@@ -66,6 +72,25 @@ class CreateWarehouseShippingInfo(Mutation):
         warehouse_shipping_info.save()
 
         return CreateWarehouseShippingInfo(warehouse_shipping_info=warehouse_shipping_info)
+    
+class UpdateWarehouseShippingInfo(Mutation):
+    class Arguments:
+        warehouse_id = graphene.ID(required=True)
+        shipping_data = UpdateWarehouseShippingInfoInput()
+
+    warehouse_shipping_info = graphene.Field(WarehouseShippingInfoType)
+
+    def mutate(self, info, warehouse_id, shipping_data=None):
+        warehouse_shipping_info = WarehouseShippingInfo.objects.get(warehouse__pk=warehouse_id)
+        if shipping_data.posta_code is not None:
+            warehouse_shipping_info.posta_code = shipping_data.posta_code
+        if shipping_data.address is not None:
+            warehouse_shipping_info.address = shipping_data.address
+        if shipping_data.city is not None:
+            warehouse_shipping_info.city = shipping_data.city
+        if shipping_data.province is not None:
+            warehouse_shipping_info.province = shipping_data.province
+        warehouse_shipping_info.save()
 
 class Mutations(object):
     pass
