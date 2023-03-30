@@ -11,7 +11,7 @@ class Donation(models.Model):
     located = models.OneToOneField(Warehouse, on_delete=models.CASCADE, blank=True, null=True)
     donation_used = models.BooleanField(default=False)
 
-
+# hello
 class BloodDonation(models.Model):
     #! donations shouldn't be allowed to be deleted, but if one is with a product.. keep the product
     donation = models.OneToOneField(Donation, on_delete=models.PROTECT)
