@@ -1,12 +1,11 @@
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
-
 # Create your models here.
 class Warehouse(models.Model):
     pass
 
-class ShippingInfo(models.Model):
+class WarehouseShippingInfo(models.Model):
     PROVINCE_ALBERTA = 'AB'
     PROVINCE_BRITISHCOLUMBIA = 'BC'
     PROVINCE_MANITOBA = 'MB'

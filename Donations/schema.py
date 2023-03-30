@@ -1,4 +1,4 @@
-import graphene, json
+import graphene
 from graphene import InputObjectType, Mutation
 from graphene_django import DjangoObjectType
 from .models import *
