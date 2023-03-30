@@ -190,12 +190,12 @@ class CreateShippingInfo(Mutation):
     shipping_info = graphene.Field(ShippingInfoType)
 
     #* Like CreateDonor but only need to create a ContactInfo entity and ConorContactInfo relation
-    def mutate(self, info, donor_id, contact_data):
+    def mutate(self, info, donor_id, shipping_data):
         shipping_info = ShippingInfo(
-            postal_code=shipping_info.postal_code,
-            address=shipping_info.address,
-            city=shipping_info.city,
-            province=shipping_info.province
+            postal_code=shipping_data.postal_code,
+            address=shipping_data.address,
+            city=shipping_data.city,
+            province=shipping_data.province
         )
         shipping_info.save()
 
