@@ -92,5 +92,17 @@ class UpdateWarehouseShippingInfo(Mutation):
             warehouse_shipping_info.province = shipping_data.province
         warehouse_shipping_info.save()
 
+class DeleteWarehouse(Mutation):
+    class Arguments:
+        warehouse_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean() # verify that the entity was deleted
+
+    def mutate(self, info, warehouse_id):
+        Warehouse.objects.filter(pk=warehouse_id).delete()
+        return DeleteWarehouse(delete_success=True)
+
 class Mutations(object):
-    pass
+    create_warehouse = CreateWarehouse.Field()
+    update_warehouse_shipping_info = UpdateWarehouseShippingInfo.Field()
+    delete_warehouse = DeleteWarehouse.Field()
