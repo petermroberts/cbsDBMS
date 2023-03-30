@@ -216,12 +216,16 @@ class UpdateShippingInfo(Mutation):
 
     shipping_info = graphene.Field(ShippingInfoType)
 
-    def mutate(self, info, shipping_info_id, shipping_data):
+    def mutate(self, info, shipping_info_id, shipping_data=None):
         shipping_info = ShippingInfo.objects.get(pk=shipping_info_id)
-        if shipping_data.phone is not None:
-            shipping_info.phone = shipping_data.phone
-        if shipping_data.email is not None:
-            shipping_info.email = shipping_data.email
+        if shipping_data.posta_code is not None:
+            shipping_info.posta_code = shipping_data.posta_code
+        if shipping_data.address is not None:
+            shipping_info.address = shipping_data.address
+        if shipping_data.city is not None:
+            shipping_info.city = shipping_data.city
+        if shipping_data.province is not None:
+            shipping_info.province = shipping_data.province
         shipping_info.save()
         return UpdateShippingInfo(shipping_info=shipping_info)
 
