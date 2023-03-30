@@ -255,14 +255,3 @@ class Mutation(object):
     update_shipping_info = UpdateShippingInfo.Field()
     delete_shipping_info = DeleteShippingInfo.Field()
 
-    # def resolve_create_donor(self, info, donor_data):
-    #     # Create the Donor object and save it to the db along with the contact and shipping info
-    #     donor = Donor(
-    #         first_name=donor_data.first_name,
-    #         last_name=donor_data.last_name,
-    #         date_of_birth=donor_data.date_of_birth,
-    #         blood_type=donor_data.blood_type,
-    #     )
-    #     donor.save()
-
-    #     return CreateDonor(donor=donor)
