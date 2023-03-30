@@ -13,7 +13,7 @@ class WarehouseShippingInfoType(DjangoObjectType):
 
 class Query(object):
     all_warehouses = graphene.List(WarehouseType)
-    warehouse_by_id = graphene.List(WarehouseType, id=graphene.ID(require=True))
+    warehouse_by_id = graphene.List(WarehouseType, id=graphene.ID(required=True))
     warehouses_by_province = graphene.List(WarehouseType, province=graphene.String(required=True))
 
     def resolve_all_warehouses(self, info, **kwargs):

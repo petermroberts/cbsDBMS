@@ -49,10 +49,10 @@ class Sample(models.Model):
     located = models.OneToOneField(Warehouse, on_delete=models.CASCADE)
 
 # #todo review these two models
-# class Order(models.Model):
-#     created_at = models.DateTimeField(auto_now_add=True)
+class Order(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
     
-# class OrderItem(models.Model):
-#     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-#     donation = models.ForeignKey(Donation, on_delete=models.PROTECT)
-#     product = models.TextChoices('Product', 'BLOOD PLASMA PLATELETS')
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    donation = models.ForeignKey(Donation, on_delete=models.PROTECT)
+    product = models.TextChoices('Product', 'BLOOD PLASMA PLATELETS')
