@@ -335,9 +335,6 @@ class DeleteSample(Mutation):
         Sample.objects.get(pk=sample_id)
         return DeleteSample(delete_success=True)
 
-class DeleteExpiredProduct(Mutation):
-    pass
-
 #todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
     create_donation = CreateDonation.Field()
