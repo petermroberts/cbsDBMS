@@ -190,12 +190,12 @@ class CreateShippingInfo(Mutation):
     shipping_info = graphene.Field(ShippingInfoType)
 
     #* Like CreateDonor but only need to create a ContactInfo entity and ConorContactInfo relation
-    def mutate(self, info, donor_id, contact_data):
+    def mutate(self, info, donor_id, shipping_data):
         shipping_info = ShippingInfo(
-            postal_code=shipping_info.postal_code,
-            address=shipping_info.address,
-            city=shipping_info.city,
-            province=shipping_info.province
+            postal_code=shipping_data.postal_code,
+            address=shipping_data.address,
+            city=shipping_data.city,
+            province=shipping_data.province
         )
         shipping_info.save()
 
@@ -216,12 +216,16 @@ class UpdateShippingInfo(Mutation):
 
     shipping_info = graphene.Field(ShippingInfoType)
 
-    def mutate(self, info, shipping_info_id, shipping_data):
+    def mutate(self, info, shipping_info_id, shipping_data=None):
         shipping_info = ShippingInfo.objects.get(pk=shipping_info_id)
-        if shipping_data.phone is not None:
-            shipping_info.phone = shipping_data.phone
-        if shipping_data.email is not None:
-            shipping_info.email = shipping_data.email
+        if shipping_data.posta_code is not None:
+            shipping_info.posta_code = shipping_data.posta_code
+        if shipping_data.address is not None:
+            shipping_info.address = shipping_data.address
+        if shipping_data.city is not None:
+            shipping_info.city = shipping_data.city
+        if shipping_data.province is not None:
+            shipping_info.province = shipping_data.province
         shipping_info.save()
         return UpdateShippingInfo(shipping_info=shipping_info)
 
@@ -251,14 +255,3 @@ class Mutation(object):
     update_shipping_info = UpdateShippingInfo.Field()
     delete_shipping_info = DeleteShippingInfo.Field()
 
-    # def resolve_create_donor(self, info, donor_data):
-    #     # Create the Donor object and save it to the db along with the contact and shipping info
-    #     donor = Donor(
-    #         first_name=donor_data.first_name,
-    #         last_name=donor_data.last_name,
-    #         date_of_birth=donor_data.date_of_birth,
-    #         blood_type=donor_data.blood_type,
-    #     )
-    #     donor.save()
-
-    #     return CreateDonor(donor=donor)
