@@ -95,37 +95,6 @@ class CreateDonor(Mutation):
 
         return CreateDonor(donor=donor)
 
-#* donor UPDATE method
-class UpdateDonor(Mutation):
-    class Arguments:
-        donor_id = graphene.ID(required=True)
-        first_name = graphene.String(required=False)
-        last_name = graphene.String(required=False)
-
-    donor = graphene.Field(DonorType)
-
-    # Update donor entity if at least one of the two attributes below are modified
-    #* Note that date_of_birth and blood_type won't be modified
-    def mutate(self, info, donor_id, first_name=None, last_name=None):
-        donor = Donor.objects.get(pk=donor_id)
-        if first_name is not None:
-            donor.first_name = first_name
-        if last_name is not None:
-            donor.last_name = last_name
-        donor.save() # save the modifications
-        return UpdateDonor(donor=donor)
-
-#* donor DELETE method
-class DeleteDonor(Mutation):
-    class Arguments:
-        donor_id = graphene.ID(required=True)
-
-    delete_success = graphene.Boolean() # verify that the entity was deleted
-
-    def mutate(self, info, donor_id):
-        Donor.objects.filter(pk=donor_id).delete()
-        return DeleteDonor(delete_success=True)
-
 #* contact info CREATE method
 class CreateContactInfo(Mutation):
     class Arguments:
@@ -150,37 +119,7 @@ class CreateContactInfo(Mutation):
         donor_contact_info.save()
 
         return CreateContactInfo(contact_info=contact_info)
-
-#* contact info UPDATE method
-class UpdateContactInfo(Mutation):
-    class Arguments:
-        contact_info_id = graphene.ID(required=True)
-        contact_data = CreateContactInfoInput(required=True)
-
-    contact_info = graphene.Field(ContactInfoType)
-
-    def mutate(self, info, contact_info_id, contact_data):
-        contact_info = ContactInfo.objects.get(pk=contact_info_id)
-        if contact_data.phone is not None:
-            contact_info.phone = contact_data.phone
-        if contact_data.email is not None:
-            contact_info.email = contact_data.email
-        contact_info.save()
-        return UpdateContactInfo(contact_info=contact_info)
-
-#* contact info DELETE method
-class DeleteContactInfo(Mutation):
-    class Arguments:
-        contact_info_id = graphene.ID(required=True)
-
-    delete_success = graphene.Boolean()
-
-    # Since the DonorContactInfo relation has a Foreign Key to ContactInfo where on_delete=models.CASCADE
-    # we don't need to explicitly delete the relation
-    def mutate(self, info, contact_info_id):
-        ContactInfo.objects.filter(pk=contact_info_id).delete()
-        return DeleteContactInfo(delete_success=True)
-
+    
 #* shipping info CREATE method
 class CreateShippingInfo(Mutation):
     class Arguments:
@@ -208,6 +147,43 @@ class CreateShippingInfo(Mutation):
 
         return CreateShippingInfo(shipping_info=shipping_info)
 
+#* donor UPDATE method
+class UpdateDonor(Mutation):
+    class Arguments:
+        donor_id = graphene.ID(required=True)
+        first_name = graphene.String(required=False)
+        last_name = graphene.String(required=False)
+
+    donor = graphene.Field(DonorType)
+
+    # Update donor entity if at least one of the two attributes below are modified
+    #* Note that date_of_birth and blood_type won't be modified
+    def mutate(self, info, donor_id, first_name=None, last_name=None):
+        donor = Donor.objects.get(pk=donor_id)
+        if first_name is not None:
+            donor.first_name = first_name
+        if last_name is not None:
+            donor.last_name = last_name
+        donor.save() # save the modifications
+        return UpdateDonor(donor=donor)
+
+#* contact info UPDATE method
+class UpdateContactInfo(Mutation):
+    class Arguments:
+        contact_info_id = graphene.ID(required=True)
+        contact_data = CreateContactInfoInput(required=True)
+
+    contact_info = graphene.Field(ContactInfoType)
+
+    def mutate(self, info, contact_info_id, contact_data):
+        contact_info = ContactInfo.objects.get(pk=contact_info_id)
+        if contact_data.phone is not None:
+            contact_info.phone = contact_data.phone
+        if contact_data.email is not None:
+            contact_info.email = contact_data.email
+        contact_info.save()
+        return UpdateContactInfo(contact_info=contact_info)
+
 #* shipping info UPDATE method
 class UpdateShippingInfo(Mutation):
     class Arguments:
@@ -228,6 +204,30 @@ class UpdateShippingInfo(Mutation):
             shipping_info.province = shipping_data.province
         shipping_info.save()
         return UpdateShippingInfo(shipping_info=shipping_info)
+
+#* donor DELETE method
+class DeleteDonor(Mutation):
+    class Arguments:
+        donor_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean() # verify that the entity was deleted
+
+    def mutate(self, info, donor_id):
+        Donor.objects.filter(pk=donor_id).delete()
+        return DeleteDonor(delete_success=True)
+
+#* contact info DELETE method
+class DeleteContactInfo(Mutation):
+    class Arguments:
+        contact_info_id = graphene.ID(required=True)
+
+    delete_success = graphene.Boolean()
+
+    # Since the DonorContactInfo relation has a Foreign Key to ContactInfo where on_delete=models.CASCADE
+    # we don't need to explicitly delete the relation
+    def mutate(self, info, contact_info_id):
+        ContactInfo.objects.filter(pk=contact_info_id).delete()
+        return DeleteContactInfo(delete_success=True)
 
 #* shipping info DELETE method
 class DeleteShippingInfo(Mutation):
