@@ -24,8 +24,6 @@ class Query(object):
     
     def resolve_warehouses_by_province(self, info, province):
         return Warehouse.objects.filter(province=province)
-<<<<<<< Updated upstream
-=======
 
 class CreateWarehouseShippingInfoInput(InputObjectType):
     postal_code = graphene.String(required=True)
@@ -84,8 +82,8 @@ class UpdateWarehouseShippingInfo(Mutation):
 
     def mutate(self, info, warehouse_id, shipping_data=None):
         warehouse_shipping_info = WarehouseShippingInfo.objects.get(warehouse__pk=warehouse_id)
-        if shipping_data.posta_code is not None:
-            warehouse_shipping_info.posta_code = shipping_data.posta_code
+        if shipping_data.postal_code is not None:
+            warehouse_shipping_info.postal_code = shipping_data.postal_code
         if shipping_data.address is not None:
             warehouse_shipping_info.address = shipping_data.address
         if shipping_data.city is not None:
@@ -108,4 +106,3 @@ class Mutation(object):
     create_warehouse = CreateWarehouse.Field()
     update_warehouse_shipping_info = UpdateWarehouseShippingInfo.Field()
     delete_warehouse = DeleteWarehouse.Field()
->>>>>>> Stashed changes
