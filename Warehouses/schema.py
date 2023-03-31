@@ -39,7 +39,8 @@ class UpdateWarehouseShippingInfoInput(InputObjectType):
 
 class CreateWarehouse(Mutation):
     class Arguments:
-        shipping_data = CreateWarehouseShippingInfoInput(required=True)
+        pass
+        # shipping_data = CreateWarehouseShippingInfoInput(required=True)
 
     warehouse = graphene.Field(WarehouseType)
 
@@ -47,11 +48,6 @@ class CreateWarehouse(Mutation):
         warehouse = Warehouse()
         warehouse.save()
 
-        shipping_mutation = CreateWarehouseShippingInfo(
-            warehouse_id=warehouse.id, 
-            shipping_data=shipping_data
-        )
-        shipping_info = shipping_mutation.mutate(info)
         return CreateWarehouse(warehouse=warehouse)
 
 class CreateWarehouseShippingInfo(Mutation):
@@ -62,8 +58,9 @@ class CreateWarehouseShippingInfo(Mutation):
     warehouse_shipping_info = graphene.Field(WarehouseShippingInfoType)
 
     def mutate(self, info, warehouse_id, shipping_data):
+        warehouse = Warehouse.objects.get(pk=warehouse_id)
         warehouse_shipping_info = WarehouseShippingInfo(
-            warehouse=warehouse_id,
+            warehouse=warehouse,
             postal_code=shipping_data.postal_code,
             address=shipping_data.address,
             city=shipping_data.city,
@@ -76,7 +73,7 @@ class CreateWarehouseShippingInfo(Mutation):
 class UpdateWarehouseShippingInfo(Mutation):
     class Arguments:
         warehouse_id = graphene.ID(required=True)
-        shipping_data = UpdateWarehouseShippingInfoInput()
+        shipping_data = UpdateWarehouseShippingInfoInput(required=True)
 
     warehouse_shipping_info = graphene.Field(WarehouseShippingInfoType)
 
@@ -104,5 +101,6 @@ class DeleteWarehouse(Mutation):
 
 class Mutation(object):
     create_warehouse = CreateWarehouse.Field()
+    create_warehouse_shippingInfo = CreateWarehouseShippingInfo.Field()
     update_warehouse_shipping_info = UpdateWarehouseShippingInfo.Field()
     delete_warehouse = DeleteWarehouse.Field()

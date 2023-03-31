@@ -7,7 +7,6 @@ from datetime import date
 class DonationType(DjangoObjectType):
     class Meta:
         model = Donation
-        fields = '__all__'
 
 class BloodDonationType(DjangoObjectType):
     class Meta:
@@ -33,7 +32,6 @@ class SampleType(DjangoObjectType):
     class Meta:
         model = Sample
 
-#todo make queries for plasma and platelet donations
 class Query(object):
     all_donations = graphene.List(DonationType)
     donation_by_id = graphene.Field(DonationType, id=graphene.ID(required=True))
@@ -90,7 +88,7 @@ class Query(object):
         return PlasmaDonation.objects.all()
     
     def resolve_plasma_donations_by_blood_type(self, info, blood_type):
-        return PlasmaDonation.objects.filter(donation__donor__blood_type=blood_type)
+        return PlasmaDonation.objects.filter(donation__donor__blood_type=blood_type).distinct()
 
     def resolve_plasma_donations_by_location(self, info, warehouse_id):
         return PlasmaDonation.objects.filter(location__pk=warehouse_id)
@@ -99,7 +97,7 @@ class Query(object):
         return PlateletDonation.objects.all()
     
     def resolve_platelet_donations_by_blood_type(self, info, blood_type):
-        return PlateletDonation.objects.filter(donation__donor__blood_type=blood_type)
+        return PlateletDonation.objects.filter(donation__donor__blood_type=blood_type).distinct()
 
     def resolve_platelet_donations_by_location(self, info, warehouse_id):
         return PlateletDonation.objects.filter(location__pk=warehouse_id)
@@ -291,6 +289,9 @@ class UpdateSample(Mutation):
         sample = Sample.objects.get(pk=sample_id)
         if infection is not None:
             sample.infection = infection
+            donation = Donation.objects.get(pk=sample.donation)
+            donation.rejected = True
+            donation.save()
         sample.save()
 
         return UpdateSample(sample=sample)
@@ -335,7 +336,6 @@ class DeleteSample(Mutation):
         Sample.objects.get(pk=sample_id)
         return DeleteSample(delete_success=True)
 
-#todo make CREATE, UPDATE, and DELETE methods for all types
 class Mutation(object):
     create_donation = CreateDonation.Field()
     create_blood_donation = CreateBloodDonation.Field()

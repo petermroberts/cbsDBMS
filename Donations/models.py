@@ -20,6 +20,7 @@ class BloodDonation(models.Model):
 class PlasmaDonationDonations(models.Model):
     plasma_donation = models.ForeignKey('PlasmaDonation', on_delete=models.CASCADE)
     donation = models.ForeignKey(Donation, on_delete=models.PROTECT)
+    located = models.OneToOneField(Warehouse, on_delete=models.CASCADE)
 
 class PlasmaDonation(models.Model):
     donations = models.ManyToManyField(Donation, through='PlasmaDonationDonations')
@@ -27,6 +28,7 @@ class PlasmaDonation(models.Model):
 class PlateletDonationDonations(models.Model):
     platelet_donation = models.ForeignKey('PlateletDonation', on_delete=models.CASCADE)
     donation = models.ForeignKey(Donation, on_delete=models.PROTECT)
+    located = models.OneToOneField(Warehouse, on_delete=models.CASCADE)
 
 class PlateletDonation(models.Model):
     donations = models.ManyToManyField(Donation, through='PlateletDonationDonations')

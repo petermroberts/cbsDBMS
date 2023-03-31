@@ -3,10 +3,6 @@ from graphene import InputObjectType, Mutation
 from graphene_django import DjangoObjectType
 from .models import *
 
-#todo CreateShippingInfo
-#todo UpdateShippingInfo
-#todo DeleteShippingInfo
-
 class DonorType(DjangoObjectType):
     class Meta:
         model = Donor
